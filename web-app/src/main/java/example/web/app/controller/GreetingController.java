@@ -9,6 +9,13 @@ import example.web.framework.HttpExchange;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+// A controller can be an interface or a class.
+// It must not be final and it needs to have either a non-private, no-argument constructor or no constructor at all.
+// It does not need to extend or implement a particular class or interface.
+// However, extending or implementing the `HttpExchange` interface is the most convenient way to get access to the
+// dependencies which the controller requires in order to produce any output.
+// The other option is to "summon" any of the dependencies provided by the `HttpExchange` interface class by adding it
+// as a synapse method, i.e. an abstract method without parameters.
 public interface GreetingController extends HttpExchange {
 
     // A controller method can be a virtual method with no parameter...
