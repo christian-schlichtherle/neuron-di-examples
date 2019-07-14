@@ -9,17 +9,21 @@ import example.web.framework.HttpServer;
 
 import java.io.IOException;
 
-public class Main {
+public class Main implements HttpServer<Main> {
 
-    public static void main(String... ignored) throws IOException {
-        HttpServer
+    private Main() {
+    }
+
+    public String message() {
+        return "Hello, %s!";
+    }
+
+    public static void main(String... args) throws IOException {
+        new Main()
                 .with(GreetingController.class)
                     .route("/greeting")
                         .get(GreetingController::get)
                         .post(GreetingController::post)
-                .start(8080);
-    }
-
-    private Main() {
+                .start(args.length > 0 ? Integer.parseInt(args[0]) : 8080);
     }
 }

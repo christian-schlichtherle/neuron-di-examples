@@ -6,7 +6,7 @@ package example.web.framework;
 
 import java.util.stream.Collectors;
 
-interface ErrorController extends HttpExchange {
+interface ErrorController<S extends HttpServer<S>> extends HttpExchange<S> {
 
     default int notFound() {
         textHtmlUtf8().append("<h1>404 Not Found</h1>No handler found for request URI.").flush();
@@ -15,7 +15,7 @@ interface ErrorController extends HttpExchange {
 
     default int methodNotAllowed() {
         responseHeaders().add("Allow", routes()
-                .get(httpContext().getPath())
+                .get(context().getPath())
                 .keySet()
                 .stream()
                 .map(HttpMethod::name)

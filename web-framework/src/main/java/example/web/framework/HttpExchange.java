@@ -51,12 +51,12 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
  * }</pre>
  */
 @Neuron(cachingStrategy = NOT_THREAD_SAFE)
-public interface HttpExchange {
+public interface HttpExchange<S extends HttpServer<S>> {
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getHttpContext()
      */
-    HttpContext httpContext();
+    HttpContext context();
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getLocalAddress()
@@ -141,10 +141,15 @@ public interface HttpExchange {
     Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
 
     /**
+     * Returns the HTTP server.
+     */
+    S server();
+
+    /**
      * Returns the exception thrown during request processing, if any.
      */
     default Optional<Throwable> throwable() {
-        return ofNullable((Throwable) httpContext().getAttributes().get("throwable"));
+        return ofNullable((Throwable) context().getAttributes().get("throwable"));
     }
 
     @Caching(NOT_THREAD_SAFE)

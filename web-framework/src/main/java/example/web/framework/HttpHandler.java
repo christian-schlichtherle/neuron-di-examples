@@ -12,9 +12,11 @@ import java.util.Map;
 import static global.namespace.neuron.di.java.Incubator.wire;
 import static java.util.Locale.ENGLISH;
 
-interface HttpHandler<T> extends HttpRoute<T> {
+interface HttpHandler<S extends HttpServer<S>, T> extends HttpRoute<T> {
 
     Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
+
+    S server();
 
     @SuppressWarnings("unchecked")
     default void apply(final com.sun.net.httpserver.HttpExchange exchange) throws Exception {
@@ -22,14 +24,18 @@ interface HttpHandler<T> extends HttpRoute<T> {
         final int statusCode = response.applyWriter(out -> {
             final T controller;
             if (HttpExchange.class.isAssignableFrom(controller())) {
-                controller = (T) wire((Class<? extends HttpExchange>) controller())
+                controller = (T) wire((Class<? extends HttpExchange<S>>) controller())
+                        .bind(HttpExchange::context).to(exchange.getHttpContext())
                         .bind(HttpExchange::responseBody).to(out)
                         .bind(HttpExchange::routes).to(this::routes)
+                        .bind(HttpExchange::server).to(this::server)
                         .using(exchange, HttpHandler::name);
             } else {
                 final var delegate = wire(HttpExchange.class)
+                        .bind(HttpExchange::context).to(exchange.getHttpContext())
                         .bind(HttpExchange::responseBody).to(out)
                         .bind(HttpExchange::routes).to(this::routes)
+                        .bind(HttpExchange::server).to(this::server)
                         .using(exchange, HttpHandler::name);
                 controller = wire(controller()).using(delegate);
             }
