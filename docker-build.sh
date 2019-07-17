@@ -8,12 +8,12 @@ function docker-mvn() {
         --rm \
         --tty \
         --volume $HOME/.m2:/root/.m2 \
-        --volume $PWD:/workspace \
-        --workdir /workspace \
-        christianschlichtherle/scala-sbt:$image_tag \
+        --volume $PWD:/workdir \
+        --workdir /workdir \
+        openjdk:$image_tag \
         ./mvnw $@
 }
 
 set -ex
-docker-mvn ${1:-1.2.8-jdk11} clean package -DskipTests=true
-docker-mvn ${2:-1.2.8-jdk12} verify
+docker-mvn ${1:-11-jdk-slim} clean package -DskipTests=true
+docker-mvn ${2:-12-jdk-alpine} verify
