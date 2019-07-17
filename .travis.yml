@@ -5,7 +5,7 @@ cache:
 dist: xenial
 
 env:
-  - COMPILE_IMAGE_TAG=1.2.8-jdk11 TEST_IMAGE_TAG=1.2.8-jdk12
+  - COMPILE_IMAGE_TAG=11-jdk-slim TEST_IMAGE_TAG=12-jdk-alpine
 
 language: minimal
 
