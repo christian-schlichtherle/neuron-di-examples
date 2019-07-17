@@ -35,7 +35,7 @@ Using a JDK for Java 11, you can run it like this:
 
 If you don't have a JDK for Java 11, you can use the following Docker spell instead:
 
-    $ docker run -it --rm -v $PWD:/workspace -w /workspace -p 8080:8080 christianschlichtherle/scala-sbt:1.2.8-jdk11 \
+    $ docker run -it --rm -v $PWD:/workdir -w /workdir -p 8080:8080 openjdk:11-jdk \
         java -jar web-app/target/web-app-*-all.jar
     08:37:40.123 [main] INFO example.web.framework.HttpServer - Serving HTTP/1.1 on port 8080.
 
