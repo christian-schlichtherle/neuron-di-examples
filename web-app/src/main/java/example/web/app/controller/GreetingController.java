@@ -34,7 +34,7 @@ public interface GreetingController extends HttpExchange<Main> {
     // ... or a static method with the declaring class or any of its super types as its parameter.
     // For this method, `HttpExchange` is used because it's a super-interface of `GreetingController` and the method
     // doesn't need anything from that.
-    static int post(final HttpExchange<Main> x) throws Exception {
+    static int post(final HttpExchange<?> x) throws Exception {
         x.responseHeaders().add("Expires", "0");
         x.responseHeaders().add("X-greeting", "Hello, " + x.requestParam("who", "world") + '!');
         if (ThreadLocalRandom.current().nextBoolean()) {
