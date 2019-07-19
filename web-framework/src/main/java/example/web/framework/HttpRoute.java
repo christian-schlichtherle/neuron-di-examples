@@ -4,13 +4,13 @@
  */
 package example.web.framework;
 
-public interface HttpRoute<C> {
+public interface HttpRoute<C extends HttpController> {
+
+    HttpAction<? super C> action();
 
     String contextPath();
 
-    HttpMethod method();
-
     Class<C> controller();
 
-    HttpAction<? super C> action();
+    HttpMethod method();
 }

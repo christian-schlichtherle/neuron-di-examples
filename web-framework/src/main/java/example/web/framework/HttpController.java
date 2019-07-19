@@ -7,6 +7,7 @@ package example.web.framework;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpPrincipal;
 import global.namespace.fun.io.api.Encoder;
 import global.namespace.fun.io.bios.BIOS;
@@ -31,93 +32,91 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 
 /**
- * Provides access to the HTTP request/response model available for injection in controller classes.
- * This is a subset of the abstract class {@link com.sun.net.httpserver.HttpsExchange}, with the addition of some
- * default methods.
- * <p>
- * A controller may simply extend this interface or selectively "summon" any method provided by this interface by adding
- * an abstract, parameter-less method of the same name and the same return type (or any of its super-types).
- * For example:
- * <pre>{@code
- * public interface IndexController {
- *
- *     // "Summons" a PrintWriter to produce a `text/plain; charset=UTF-8` response:
- *     PrintWriter textPlainUtf8();
- *
- *     // The actual controller method:
- *     default int index() {
- *         textPlainUtf8().println("Hello, world!");
- *         return 200;
- *     }
- * }
- * }</pre>
+ * Provides access to the HTTP request/response model.
+ * This interface leaks types from the class {@link HttpExchange}, so don't use it in production.
  */
 @SuppressWarnings("unused")
 @Neuron(cachingStrategy = NOT_THREAD_SAFE)
-public interface HttpExchange {
+public interface HttpController {
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getHttpContext()
+     * Returns the underlying {@code HttpExchange}.
+     */
+    HttpExchange exchange();
+
+    /**
+     * @see HttpExchange#getResponseBody()
+     */
+    OutputStream responseBody();
+
+    /**
+     * Returns the configured routes.
+     * The returned map as well as its nested maps are immutable.
+     */
+    Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
+
+    /**
+     * @see HttpExchange#getHttpContext()
      */
     @Caching(NOT_THREAD_SAFE)
     default HttpContext context() {
-        return underlying().getHttpContext();
+        return exchange().getHttpContext();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getLocalAddress()
+     * @see HttpExchange#getLocalAddress()
      */
     @Caching(NOT_THREAD_SAFE)
     default InetSocketAddress localAddress() {
-        return underlying().getLocalAddress();
+        return exchange().getLocalAddress();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getPrincipal()
+     * @see HttpExchange#getPrincipal()
      */
     @Caching(NOT_THREAD_SAFE)
     default HttpPrincipal principal() {
-        return underlying().getPrincipal();
+        return exchange().getPrincipal();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getProtocol()
+     * @see HttpExchange#getProtocol()
      */
     @Caching(NOT_THREAD_SAFE)
     default String protocol() {
-        return underlying().getProtocol();
+        return exchange().getProtocol();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getRemoteAddress()
+     * @see HttpExchange#getRemoteAddress()
      */
     @Caching(NOT_THREAD_SAFE)
     default InetSocketAddress remoteAddress() {
-        return underlying().getRemoteAddress();
+        return exchange().getRemoteAddress();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getRequestBody()
+     * @see HttpExchange#getRequestBody()
      */
     @Caching(NOT_THREAD_SAFE)
     default InputStream requestBody() {
-        return underlying().getRequestBody();
+        return exchange().getRequestBody();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getRequestHeaders()
+     * @see HttpExchange#getRequestHeaders()
      */
     @Caching(NOT_THREAD_SAFE)
     default Headers requestHeaders() {
-        return underlying().getRequestHeaders();
+        return exchange().getRequestHeaders();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getRequestMethod()
+     * @see HttpExchange#getRequestMethod()
      */
     @Caching(NOT_THREAD_SAFE)
     default String requestMethod() {
-        return underlying().getRequestMethod();
+        return exchange().getRequestMethod();
     }
 
     /**
@@ -147,31 +146,20 @@ public interface HttpExchange {
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getRequestURI()
+     * @see HttpExchange#getRequestURI()
      */
     @Caching(NOT_THREAD_SAFE)
     default URI requestURI() {
-        return underlying().getRequestURI();
+        return exchange().getRequestURI();
     }
 
     /**
-     * @see com.sun.net.httpserver.HttpExchange#getResponseBody()
-     */
-    OutputStream responseBody();
-
-    /**
-     * @see com.sun.net.httpserver.HttpExchange#getResponseHeaders()
+     * @see HttpExchange#getResponseHeaders()
      */
     @Caching(NOT_THREAD_SAFE)
     default Headers responseHeaders() {
-        return underlying().getResponseHeaders();
+        return exchange().getResponseHeaders();
     }
-
-    /**
-     * Returns the configured routes.
-     * The returned map as well as its nested maps are immutable.
-     */
-    Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
 
     /**
      * Returns the exception thrown during request processing, if any.
@@ -210,8 +198,6 @@ public interface HttpExchange {
     default PrintWriter textHtmlUtf8() {
         return withContentType("text/html", UTF_8);
     }
-
-    com.sun.net.httpserver.HttpExchange underlying();
 
     private PrintWriter withContentType(final String value, final Charset charset) {
         responseHeaders().add("Content-Type", value + "; charset=" + charset.name());

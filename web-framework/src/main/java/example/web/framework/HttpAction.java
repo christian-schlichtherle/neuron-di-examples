@@ -4,7 +4,7 @@
  */
 package example.web.framework;
 
-public interface HttpAction<C> {
+public interface HttpAction<C extends HttpController> {
 
-    int apply(C exchange) throws Exception;
+    int apply(C controller) throws Exception;
 }

@@ -10,19 +10,27 @@ import example.web.framework.HttpServer;
 import java.io.IOException;
 
 @SuppressWarnings("unused")
-public class Main implements HttpServer {
+public class Server implements HttpServer {
 
-    private Main() {
+    private Server() {
     }
 
     // This is a dependency provider method.
-    // It's return value gets injected into the synapse method `GreetingController.greeting()`.
-    public String greeting() {
+    // The synapse method `GreetingController.greeting()` depends on its return value.
+    // This method does not need to be public.
+    String greeting() {
         return "Hello, %s!";
     }
 
     public static void main(String... args) throws IOException {
-        new Main()
+        // If you don't want your main class to implement the `HttpServer` interface, then you might as well use an
+        // anonymous inner class instead here like so:
+        //
+        //     new HttpServer() {
+        //         String greeting() { return "Hello, %s!"; }
+        //     }.with(GreetingController.class)...
+        //
+        new Server()
                 .with(GreetingController.class)
                     .route("/greeting")
                         .get(GreetingController::get)

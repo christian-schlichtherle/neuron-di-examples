@@ -14,12 +14,12 @@ import static java.util.Objects.requireNonNull;
 public interface HttpServer {
 
     @SuppressWarnings("unchecked")
-    default <C> WithController<C> with(Class<C> controller) {
+    default <C extends HttpController> WithController<C> with(Class<C> controller) {
         return wire(HttpService.class)
-                .bind(HttpService<C>::handlers).to(new HashMap<>())
-                .bind(HttpService<C>::controller).to(requireNonNull(controller))
                 .bind(HttpService::contextPath).to("/")
-                .bind(HttpService::server).to(this)
+                .bind(HttpService<C>::controller).to(requireNonNull(controller))
+                .bind(HttpService::delegate).to(this)
+                .bind(HttpService::handlers).to(new HashMap<>())
                 .breed();
     }
 
@@ -89,7 +89,7 @@ public interface HttpServer {
 
     interface WithMethod<T> extends WithController<T>, WithContextPath<T> {
 
-        <D> WithController<D> with(Class<D> controller);
+        <D extends HttpController> WithController<D> with(Class<D> controller);
 
         void start(int port) throws IOException;
     }

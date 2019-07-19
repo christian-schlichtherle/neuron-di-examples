@@ -4,39 +4,30 @@
  */
 package example.web.framework;
 
+import com.sun.net.httpserver.HttpExchange;
 import global.namespace.fun.io.bios.BIOS;
 
 import java.util.Map;
 
 import static global.namespace.neuron.di.java.Incubator.wire;
 
-interface HttpHandler<C> extends HttpRoute<C> {
+interface HttpHandler<C extends HttpController> extends HttpRoute<C> {
+
+    Object delegate();
 
     Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
 
-    Object server();
-
-    @SuppressWarnings("unchecked")
-    default void apply(final com.sun.net.httpserver.HttpExchange exchange) throws Exception {
+    default void apply(final HttpExchange exchange) throws Exception {
         final var response = BIOS.memory();
-        final int statusCode = response.applyWriter(out -> {
-            final C controller;
-            if (HttpExchange.class.isAssignableFrom(controller())) {
-                controller = (C) wire((Class<? extends HttpExchange>) controller())
-                        .bind(HttpExchange::responseBody).to(out)
-                        .bind(HttpExchange::routes).to(this::routes)
-                        .bind(HttpExchange::underlying).to(exchange)
-                        .using(server());
-            } else {
-                final var delegate = wire(HttpExchange.class)
-                        .bind(HttpExchange::responseBody).to(out)
-                        .bind(HttpExchange::routes).to(this::routes)
-                        .bind(HttpExchange::underlying).to(exchange)
-                        .using(server());
-                controller = wire(controller()).using(delegate);
-            }
-            return action().apply(controller);
-        });
+        final int statusCode = response.applyWriter(responseBody ->
+                action().apply(
+                        wire(controller())
+                                .bind(HttpController::exchange).to(exchange)
+                                .bind(HttpController::responseBody).to(responseBody)
+                                .bind(HttpController::routes).to(this::routes)
+                                .using(delegate())
+                )
+        );
         final var responseLength = response.size().orElse(-1);
         if (responseLength <= 0) {
             exchange.sendResponseHeaders(statusCode, -1);

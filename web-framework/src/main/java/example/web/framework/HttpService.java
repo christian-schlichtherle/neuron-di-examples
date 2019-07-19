@@ -10,25 +10,25 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import static example.web.framework.HttpMethod.*;
+import static example.web.framework.HttpServer.*;
 import static global.namespace.neuron.di.java.Incubator.wire;
 import static java.util.Locale.ENGLISH;
 import static java.util.stream.Collectors.toUnmodifiableMap;
-import static example.web.framework.HttpServer.*;
 
 @Neuron
-interface HttpService<C> extends WithMethod<C> {
-
-    Map<String, Map<HttpMethod, HttpHandler<?>>> handlers();
-
-    Class<C> controller();
+interface HttpService<C extends HttpController> extends WithMethod<C> {
 
     String contextPath();
 
-    Object server();
+    Class<C> controller();
+
+    HttpServer delegate();
+
+    Map<String, Map<HttpMethod, HttpHandler<?>>> handlers();
 
     @SuppressWarnings("unchecked")
     @Override
-    default <D> WithController<D> with(Class<D> controller) {
+    default <D extends HttpController> WithController<D> with(Class<D> controller) {
         return wire(HttpService.class)
                 .bind(HttpService<D>::controller).to(controller)
                 .using(this);
@@ -174,17 +174,17 @@ interface HttpService<C> extends WithMethod<C> {
     }
 
     @SuppressWarnings("unchecked")
-    default <D> HttpHandler<D> handler(
+    default <D extends HttpController> HttpHandler<D> handler(
             String contextPath,
             HttpMethod method,
             Class<D> controller,
             HttpAction<? super D> action
     ) {
         return wire(HttpHandler.class)
-                .bind(HttpHandler::contextPath).to(contextPath)
-                .bind(HttpHandler::method).to(method)
-                .bind(HttpHandler<D>::controller).to(controller)
                 .bind(HttpHandler::action).to(() -> (HttpAction) action)
+                .bind(HttpHandler::contextPath).to(contextPath)
+                .bind(HttpHandler<D>::controller).to(controller)
+                .bind(HttpHandler::method).to(method)
                 .using(this);
     }
 
