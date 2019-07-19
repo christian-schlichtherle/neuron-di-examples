@@ -10,6 +10,7 @@ import java.util.HashMap;
 import static global.namespace.neuron.di.java.Incubator.wire;
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("unused")
 public interface HttpServer {
 
     @SuppressWarnings("unchecked")

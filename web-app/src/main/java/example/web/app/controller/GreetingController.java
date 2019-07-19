@@ -4,7 +4,6 @@
  */
 package example.web.app.controller;
 
-import example.web.app.Main;
 import example.web.app.dto.Greeting;
 import example.web.framework.HttpExchange;
 
