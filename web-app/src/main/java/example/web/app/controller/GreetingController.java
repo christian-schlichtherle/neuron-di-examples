@@ -36,7 +36,7 @@ public interface GreetingController extends HttpController {
         c.responseHeaders().add("Expires", "0");
         c.responseHeaders().add("X-greeting", c.message());
         if (ThreadLocalRandom.current().nextBoolean()) {
-            throw new Exception("The controller has chosen to throw a random exception - bad luck!");
+            throw new Exception("The controller has randomly chosen to throw an exception - bad luck!");
         }
         return 204;
     }
