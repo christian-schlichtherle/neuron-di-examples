@@ -9,12 +9,15 @@ import example.web.framework.HttpServer;
 
 import java.io.IOException;
 
-public class Main implements HttpServer<Main> {
+@SuppressWarnings("unused")
+public class Main implements HttpServer {
 
     private Main() {
     }
 
-    public String message() {
+    // This is a dependency provider method.
+    // It's return value gets injected into the synapse method `GreetingController.greeting()`.
+    public String greeting() {
         return "Hello, %s!";
     }
 

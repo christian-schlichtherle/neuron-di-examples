@@ -5,7 +5,9 @@
 package example.web.framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpPrincipal;
 import global.namespace.fun.io.api.Encoder;
 import global.namespace.fun.io.bios.BIOS;
 import global.namespace.fun.io.jackson.Jackson;
@@ -50,48 +52,73 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
  * }
  * }</pre>
  */
+@SuppressWarnings("unused")
 @Neuron(cachingStrategy = NOT_THREAD_SAFE)
-public interface HttpExchange<S extends HttpServer<S>> {
+public interface HttpExchange {
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getHttpContext()
      */
-    HttpContext context();
+    @Caching(NOT_THREAD_SAFE)
+    default HttpContext context() {
+        return underlying().getHttpContext();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getLocalAddress()
      */
-    InetSocketAddress localAddress();
+    @Caching(NOT_THREAD_SAFE)
+    default InetSocketAddress localAddress() {
+        return underlying().getLocalAddress();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getPrincipal()
      */
-    HttpPrincipal principal();
+    @Caching(NOT_THREAD_SAFE)
+    default HttpPrincipal principal() {
+        return underlying().getPrincipal();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getProtocol()
      */
-    String protocol();
+    @Caching(NOT_THREAD_SAFE)
+    default String protocol() {
+        return underlying().getProtocol();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getRemoteAddress()
      */
-    InetSocketAddress remoteAddress();
+    @Caching(NOT_THREAD_SAFE)
+    default InetSocketAddress remoteAddress() {
+        return underlying().getRemoteAddress();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getRequestBody()
      */
-    InputStream requestBody();
+    @Caching(NOT_THREAD_SAFE)
+    default InputStream requestBody() {
+        return underlying().getRequestBody();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getRequestHeaders()
      */
-    Headers requestHeaders();
+    @Caching(NOT_THREAD_SAFE)
+    default Headers requestHeaders() {
+        return underlying().getRequestHeaders();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getRequestMethod()
      */
-    String requestMethod();
+    @Caching(NOT_THREAD_SAFE)
+    default String requestMethod() {
+        return underlying().getRequestMethod();
+    }
 
     /**
      * Returns the first value of the request parameter with the given name or the given default value if not present.
@@ -122,7 +149,10 @@ public interface HttpExchange<S extends HttpServer<S>> {
     /**
      * @see com.sun.net.httpserver.HttpExchange#getRequestURI()
      */
-    URI requestURI();
+    @Caching(NOT_THREAD_SAFE)
+    default URI requestURI() {
+        return underlying().getRequestURI();
+    }
 
     /**
      * @see com.sun.net.httpserver.HttpExchange#getResponseBody()
@@ -132,18 +162,16 @@ public interface HttpExchange<S extends HttpServer<S>> {
     /**
      * @see com.sun.net.httpserver.HttpExchange#getResponseHeaders()
      */
-    Headers responseHeaders();
+    @Caching(NOT_THREAD_SAFE)
+    default Headers responseHeaders() {
+        return underlying().getResponseHeaders();
+    }
 
     /**
      * Returns the configured routes.
      * The returned map as well as its nested maps are immutable.
      */
     Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
-
-    /**
-     * Returns the HTTP server.
-     */
-    S server();
 
     /**
      * Returns the exception thrown during request processing, if any.
@@ -182,6 +210,8 @@ public interface HttpExchange<S extends HttpServer<S>> {
     default PrintWriter textHtmlUtf8() {
         return withContentType("text/html", UTF_8);
     }
+
+    com.sun.net.httpserver.HttpExchange underlying();
 
     private PrintWriter withContentType(final String value, final Charset charset) {
         responseHeaders().add("Content-Type", value + "; charset=" + charset.name());

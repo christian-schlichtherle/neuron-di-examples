@@ -16,27 +16,27 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 import static example.web.framework.HttpServer.*;
 
 @Neuron
-interface HttpService<S extends HttpServer<S>, T> extends WithMethod<T> {
+interface HttpService<C> extends WithMethod<C> {
 
-    Map<String, Map<HttpMethod, HttpHandler<S, ?>>> handlers();
+    Map<String, Map<HttpMethod, HttpHandler<?>>> handlers();
 
-    Class<T> controller();
+    Class<C> controller();
 
     String contextPath();
 
-    S server();
+    Object server();
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> WithController<U> with(Class<U> controller) {
+    default <D> WithController<D> with(Class<D> controller) {
         return wire(HttpService.class)
-                .bind(HttpService<S, U>::controller).to(controller)
+                .bind(HttpService<D>::controller).to(controller)
                 .using(this);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default WithContextPath<T> route(final String contextPath) {
+    default WithContextPath<C> route(final String contextPath) {
         if (!contextPath.startsWith("/")) {
             throw new IllegalArgumentException("`contextPath` needs to start using `/`.");
         }
@@ -46,82 +46,81 @@ interface HttpService<S extends HttpServer<S>, T> extends WithMethod<T> {
     }
 
     @Override
-    default WithMethod<T> connect(HttpAction<? super T> action) {
+    default WithMethod<C> connect(HttpAction<? super C> action) {
         return invoke(CONNECT, action);
     }
 
     @Override
-    default WithMethod<T> delete(HttpAction<? super T> action) {
+    default WithMethod<C> delete(HttpAction<? super C> action) {
         return invoke(DELETE, action);
     }
 
     @Override
-    default WithMethod<T> get(HttpAction<? super T> action) {
+    default WithMethod<C> get(HttpAction<? super C> action) {
         return invoke(GET, action);
     }
 
     @Override
-    default WithMethod<T> head(HttpAction<? super T> action) {
+    default WithMethod<C> head(HttpAction<? super C> action) {
         return invoke(HEAD, action);
     }
 
     @Override
-    default WithMethod<T> options(HttpAction<? super T> action) {
+    default WithMethod<C> options(HttpAction<? super C> action) {
         return invoke(OPTIONS, action);
     }
 
     @Override
-    default WithMethod<T> post(HttpAction<? super T> action) {
+    default WithMethod<C> post(HttpAction<? super C> action) {
         return invoke(POST, action);
     }
 
     @Override
-    default WithMethod<T> put(HttpAction<? super T> action) {
+    default WithMethod<C> put(HttpAction<? super C> action) {
         return invoke(PUT, action);
     }
 
     @Override
-    default WithMethod<T> trace(HttpAction<? super T> action) {
+    default WithMethod<C> trace(HttpAction<? super C> action) {
         return invoke(TRACE, action);
     }
 
     @Override
-    default WithMethod<T> notFound(HttpAction<? super T> action) {
+    default WithMethod<C> notFound(HttpAction<? super C> action) {
         return invoke("404", GET, action);
     }
 
     @Override
-    default WithMethod<T> methodNotAllowed(HttpAction<? super T> action) {
+    default WithMethod<C> methodNotAllowed(HttpAction<? super C> action) {
         return invoke("405", GET, action);
     }
 
     @Override
-    default WithMethod<T> internalServerError(HttpAction<? super T> action) {
+    default WithMethod<C> internalServerError(HttpAction<? super C> action) {
         return invoke("500", GET, action);
     }
 
     @Override
-    default WithMethod<T> notImplemented(HttpAction<? super T> action) {
+    default WithMethod<C> notImplemented(HttpAction<? super C> action) {
         return invoke("501", GET, action);
     }
 
-    default WithMethod<T> invoke(HttpMethod method, HttpAction<? super T> action) {
+    default WithMethod<C> invoke(HttpMethod method, HttpAction<? super C> action) {
         return invoke(contextPath(), method, action);
     }
 
-    default WithMethod<T> invoke(
+    default WithMethod<C> invoke(
             String contextPath,
             HttpMethod method,
-            HttpAction<? super T> action) {
+            HttpAction<? super C> action) {
         handlers(contextPath).put(method, handler(contextPath, method, controller(), action));
         return this;
     }
 
-    default Map<HttpMethod, HttpHandler<S, ?>> handlers(String contextPath) {
+    default Map<HttpMethod, HttpHandler<?>> handlers(String contextPath) {
         return handlers().computeIfAbsent(contextPath, p -> new EnumMap<>(HttpMethod.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default void start(final int port) throws IOException {
         final var log = LoggerFactory.getLogger(HttpService.class);
@@ -139,10 +138,10 @@ interface HttpService<S extends HttpServer<S>, T> extends WithMethod<T> {
         routes().forEach((path, handlers) -> {
             server.createContext(path, exchange -> {
                 try {
-                    HttpHandler handler;
+                    HttpHandler<?> handler;
                     try {
                         final var result = HttpMethod.valueOf(exchange.getRequestMethod().toUpperCase(ENGLISH));
-                        handler = handlers.isEmpty() ? notFound : (HttpHandler<S, ?>) handlers.getOrDefault(result, methodNotAllowed);
+                        handler = handlers.isEmpty() ? notFound : (HttpHandler<?>) handlers.getOrDefault(result, methodNotAllowed);
                     } catch (IllegalArgumentException noSuchRequestMethod) {
                         handler = notImplemented;
                     }
@@ -175,16 +174,16 @@ interface HttpService<S extends HttpServer<S>, T> extends WithMethod<T> {
     }
 
     @SuppressWarnings("unchecked")
-    default <U> HttpHandler<S, U> handler(
+    default <D> HttpHandler<D> handler(
             String contextPath,
             HttpMethod method,
-            Class<U> controller,
-            HttpAction<? super U> action
+            Class<D> controller,
+            HttpAction<? super D> action
     ) {
         return wire(HttpHandler.class)
                 .bind(HttpHandler::contextPath).to(contextPath)
                 .bind(HttpHandler::method).to(method)
-                .bind(HttpHandler<S, U>::controller).to(controller)
+                .bind(HttpHandler<D>::controller).to(controller)
                 .bind(HttpHandler::action).to(() -> (HttpAction) action)
                 .using(this);
     }

@@ -10,13 +10,13 @@ import java.util.HashMap;
 import static global.namespace.neuron.di.java.Incubator.wire;
 import static java.util.Objects.requireNonNull;
 
-public interface HttpServer<S extends HttpServer<S>> {
+public interface HttpServer {
 
     @SuppressWarnings("unchecked")
-    default <T> WithController<T> with(Class<T> controller) {
+    default <C> WithController<C> with(Class<C> controller) {
         return wire(HttpService.class)
-                .bind(HttpService<S, T>::handlers).to(new HashMap<>())
-                .bind(HttpService<S, T>::controller).to(requireNonNull(controller))
+                .bind(HttpService<C>::handlers).to(new HashMap<>())
+                .bind(HttpService<C>::controller).to(requireNonNull(controller))
                 .bind(HttpService::contextPath).to("/")
                 .bind(HttpService::server).to(this)
                 .breed();
@@ -88,7 +88,7 @@ public interface HttpServer<S extends HttpServer<S>> {
 
     interface WithMethod<T> extends WithController<T>, WithContextPath<T> {
 
-        <U> WithController<U> with(Class<U> controller);
+        <D> WithController<D> with(Class<D> controller);
 
         void start(int port) throws IOException;
     }

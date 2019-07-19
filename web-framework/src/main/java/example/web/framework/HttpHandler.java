@@ -6,37 +6,33 @@ package example.web.framework;
 
 import global.namespace.fun.io.bios.BIOS;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import static global.namespace.neuron.di.java.Incubator.wire;
-import static java.util.Locale.ENGLISH;
 
-interface HttpHandler<S extends HttpServer<S>, T> extends HttpRoute<T> {
+interface HttpHandler<C> extends HttpRoute<C> {
 
     Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
 
-    S server();
+    Object server();
 
     @SuppressWarnings("unchecked")
     default void apply(final com.sun.net.httpserver.HttpExchange exchange) throws Exception {
         final var response = BIOS.memory();
         final int statusCode = response.applyWriter(out -> {
-            final T controller;
+            final C controller;
             if (HttpExchange.class.isAssignableFrom(controller())) {
-                controller = (T) wire((Class<? extends HttpExchange<S>>) controller())
-                        .bind(HttpExchange::context).to(exchange.getHttpContext())
+                controller = (C) wire((Class<? extends HttpExchange>) controller())
                         .bind(HttpExchange::responseBody).to(out)
                         .bind(HttpExchange::routes).to(this::routes)
-                        .bind(HttpExchange::server).to(this::server)
-                        .using(exchange, HttpHandler::name);
+                        .bind(HttpExchange::underlying).to(exchange)
+                        .using(server());
             } else {
                 final var delegate = wire(HttpExchange.class)
-                        .bind(HttpExchange::context).to(exchange.getHttpContext())
                         .bind(HttpExchange::responseBody).to(out)
                         .bind(HttpExchange::routes).to(this::routes)
-                        .bind(HttpExchange::server).to(this::server)
-                        .using(exchange, HttpHandler::name);
+                        .bind(HttpExchange::underlying).to(exchange)
+                        .using(server());
                 controller = wire(controller()).using(delegate);
             }
             return action().apply(controller);
@@ -48,15 +44,5 @@ interface HttpHandler<S extends HttpServer<S>, T> extends HttpRoute<T> {
             exchange.sendResponseHeaders(statusCode, responseLength);
             BIOS.copy(response, BIOS.stream(exchange.getResponseBody()));
         }
-    }
-
-    @SuppressWarnings("StringBufferReplaceableByString")
-    private static String name(Method method) {
-        final var name = method.getName();
-        return new StringBuilder(name.length() + 3)
-                .append("get")
-                .append(name.substring(0, 1).toUpperCase(ENGLISH))
-                .append(name.substring(1))
-                .toString();
     }
 }
