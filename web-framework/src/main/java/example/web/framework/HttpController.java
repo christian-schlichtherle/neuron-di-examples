@@ -36,7 +36,7 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
  * This interface leaks types from the class {@link HttpExchange}, so don't use it in production.
  */
 @SuppressWarnings("unused")
-@Neuron(cachingStrategy = NOT_THREAD_SAFE)
+@Neuron
 public interface HttpController {
 
     /**
