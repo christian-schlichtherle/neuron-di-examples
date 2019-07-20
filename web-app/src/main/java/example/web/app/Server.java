@@ -15,9 +15,9 @@ public class Server implements HttpServer {
     private Server() {
     }
 
-    // This is a dependency provider method.
-    // The synapse method `GreetingController.greeting()` depends on its return value.
-    // This method does not need to be public.
+    // This is a dependency provider method, that is, a non-abstract parameter-less method.
+    // The synapse method `GreetingController.greeting()` delegates every call to this method.
+    // Dependency provider methods do not need to be public.
     String greeting() {
         return "Hello, %s!";
     }

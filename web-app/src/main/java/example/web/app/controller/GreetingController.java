@@ -12,11 +12,12 @@ import java.util.concurrent.ThreadLocalRandom;
 // A controller needs to extend/implement the `HttpController` interface.
 // It must not be final and it needs to have either a non-private, no-argument constructor or no constructor at all.
 // It can also "summon" any dependencies provided by the server object as shown below.
+// Yet, this interface does not have any compile-time dependency on the server class or Neuron DI.
 public interface GreetingController extends HttpController {
 
-    // This is a synapse method, that is an abstract, parameter-less method.
-    // Any call to this method gets delegated to the dependency provider method `Server.greeting()`.
-    // This method could also be package-private if it was defined in an abstract class.
+    // This is a synapse method, that is, an abstract, parameter-less method.
+    // Every call to this method is delegated to the dependency provider method `Server.greeting()`.
+    // Synapse methods do not need to be public.
     String greeting();
 
     default String message() {
@@ -34,7 +35,7 @@ public interface GreetingController extends HttpController {
     // ... or a static method with the declaring class or any of its super types as its parameter.
     static int post(final GreetingController c) throws Exception {
         c.responseHeaders().add("Expires", "0");
-        c.responseHeaders().add("X-greeting", c.message());
+        c.responseHeaders().add("X-message", c.message());
         if (ThreadLocalRandom.current().nextBoolean()) {
             throw new Exception("The controller has randomly chosen to throw an exception - bad luck!");
         }
