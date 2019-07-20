@@ -23,7 +23,7 @@
         <fun-io.version>2.1.0</fun-io.version>
         <maven.compiler.source>11</maven.compiler.source>
         <mockito.version>2.28.2</mockito.version>
-         <neuron-di.version>6.3.1</neuron-di.version>
+        <neuron-di.version>6.4.0</neuron-di.version>
         <scala.compat.version>2.13</scala.compat.version>
         <scala.version>2.13.0</scala.version>
         <scalatest.version>3.0.8</scalatest.version>
