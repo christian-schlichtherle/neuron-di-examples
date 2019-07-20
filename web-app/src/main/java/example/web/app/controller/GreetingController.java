@@ -10,10 +10,10 @@ import example.web.framework.HttpController;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-// A controller needs to extend/implement the `HttpController` interface.
-// It must not be final and it needs to have either a non-private, no-argument constructor or no constructor at all.
-// It can also "summon" any dependencies provided by the module object as shown below.
-// Yet, this interface does not have any compile-time dependency on the module interface or Neuron DI.
+// A controller class/interface needs to implement/extend the `HttpController` interface.
+// It must not be final and it must have either a non-private, no-argument constructor or no constructor at all.
+// A controller can "summon" any dependencies provided by the module object as shown below.
+// Yet, this interface does not have any compile-time dependency on the module class or Neuron DI.
 public interface GreetingController extends HttpController {
 
     // This is a "synapse" method, that is, an abstract method without parameters.
