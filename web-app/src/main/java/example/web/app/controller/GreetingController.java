@@ -5,23 +5,26 @@
 package example.web.app.controller;
 
 import example.web.app.dto.Greeting;
+import example.web.app.service.GreetingService;
 import example.web.framework.HttpController;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 // A controller needs to extend/implement the `HttpController` interface.
 // It must not be final and it needs to have either a non-private, no-argument constructor or no constructor at all.
-// It can also "summon" any dependencies provided by the server object as shown below.
-// Yet, this interface does not have any compile-time dependency on the server class or Neuron DI.
+// It can also "summon" any dependencies provided by the module object as shown below.
+// Yet, this interface does not have any compile-time dependency on the module interface or Neuron DI.
 public interface GreetingController extends HttpController {
 
-    // This is a synapse method, that is, an abstract, parameter-less method.
-    // Every call to this method is delegated to the dependency provider method `Server.greeting()`.
-    // Synapse methods do not need to be public.
-    String greeting();
+    // This is a "synapse" method, that is, an abstract method without parameters.
+    // Each call to this method is delegated to `example.web.app.Module.greetingService()`.
+    // You could use the @Caching annotation to do this only once, but a new controller is created for every request,
+    // so it wouldn't add any value here.
+    // In general, synapse methods do not need to be public.
+    GreetingService greetingService();
 
     default String message() {
-        return String.format(greeting(), requestParam("who", "world"));
+        return greetingService().message(requestParam("who", "world"));
     }
 
     // A controller method can be a virtual method with no parameter...
