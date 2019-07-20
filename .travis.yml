@@ -9,8 +9,10 @@ env:
 
 language: minimal
 
+# Run the build in Docker to shield it from changes in the Travis environment:
 services:
   - docker
 
 script:
-  - ./docker-build.sh $COMPILE_IMAGE_TAG $TEST_IMAGE_TAG
+  - ./docker-mvnw $COMPILE_IMAGE_TAG clean package -DskipTests=true
+  - ./docker-mvnw $TEST_IMAGE_TAG verify
