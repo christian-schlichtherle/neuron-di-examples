@@ -22,9 +22,9 @@ interface HttpService<C extends HttpController> extends WithMethod<C> {
 
     Class<C> controller();
 
-    HttpServer delegate();
-
     Map<String, Map<HttpMethod, HttpHandler<?>>> handlers();
+
+    HttpServer server();
 
     @SuppressWarnings("unchecked")
     @Override

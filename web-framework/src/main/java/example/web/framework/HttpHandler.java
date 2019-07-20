@@ -13,9 +13,9 @@ import static global.namespace.neuron.di.java.Incubator.wire;
 
 interface HttpHandler<C extends HttpController> extends HttpRoute<C> {
 
-    Object delegate();
-
     Map<String, Map<HttpMethod, HttpRoute<?>>> routes();
+
+    HttpServer server();
 
     default void apply(final HttpExchange exchange) throws Exception {
         final var response = BIOS.memory();
@@ -25,7 +25,7 @@ interface HttpHandler<C extends HttpController> extends HttpRoute<C> {
                                 .bind(HttpController::exchange).to(exchange)
                                 .bind(HttpController::responseBody).to(responseBody)
                                 .bind(HttpController::routes).to(this::routes)
-                                .using(delegate())
+                                .using(server())
                 )
         );
         final var responseLength = response.size().orElse(-1);

@@ -18,8 +18,8 @@ public interface HttpServer {
         return wire(HttpService.class)
                 .bind(HttpService::contextPath).to("/")
                 .bind(HttpService<C>::controller).to(requireNonNull(controller))
-                .bind(HttpService::delegate).to(this)
                 .bind(HttpService::handlers).to(new HashMap<>())
+                .bind(HttpService::server).to(this)
                 .breed();
     }
 
