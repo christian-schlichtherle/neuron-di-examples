@@ -1,14 +1,15 @@
-#!/bin/sh
-IMAGE_TAG="$1"
+#!/usr/bin/env bash
+
+declare -r image_tag="$1"
 shift
-[ -z "$IMAGE_TAG" ] && { echo 'Usage: docker-mvnw $IMAGE_TAG [...]'; exit 1; }
+[[ -z "$image_tag" ]] && { echo "Usage: $0 IMAGE_TAG [...]"; exit 1; }
 set -x
 exec docker run \
     --interactive \
     --rm \
     --tty \
     --volume $HOME/.m2:/root/.m2 \
-    --volume "`pwd`:/workdir" \
+    --volume "$PWD:/workdir" \
     --workdir /workdir \
-    "openjdk:$IMAGE_TAG" \
+    "openjdk:$image_tag" \
     ./mvnw $@

@@ -13,7 +13,7 @@ Neuron DI targets Java 8 or later.
 However, the sample code in this repository targets a JDK for Java 11 or later.
 If you don't have a JDK for Java 11, you can run the build in Docker instead:
 
-    $ ./docker-build
+    $ ./docker-mvnw 11-jdk-slim clean verify
 
 # Example Web Framework & Web App
 
@@ -35,17 +35,19 @@ Using a JDK for Java 11, you can run it like this:
 
 If you don't have a JDK for Java 11, you can use the following Docker spell instead:
 
-    $ docker run -it --rm -v $PWD:/workdir -w /workdir -p 8080:8080 openjdk:11-jdk \
+    $ docker run -it --rm -v $PWD:/workdir -w /workdir -p 8080:8080 openjdk:11-jdk-slim \
         java -jar web-app/target/web-app-*-all.jar
     08:37:40.123 [main] INFO example.web.framework.HttpServer - Serving HTTP/1.1 on port 8080.
 
-Now you can ask the app for a greeting in JSON:
+Now you can ask the web app for a greeting in JSON:
 
+    $ curl localhost:8080/greeting
+    {"message":"Hello, world!"}
     $ curl localhost:8080/greeting?who=you
     {"message":"Hello, you!"}
+    $ curl localhost:8080/greeting?who=Christian -H 'Accept-Language: de, en;q=0.9, *;q=0.8'
+    {"message":"Hallo, Christian!"}
 
-Try playing around with other requests and see what you get.
-  
 ## License
 
 The Neuron DI Examples for Java are covered by the MIT License.

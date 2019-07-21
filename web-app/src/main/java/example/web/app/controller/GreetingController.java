@@ -24,7 +24,7 @@ public interface GreetingController extends HttpController {
     GreetingService greetingService();
 
     default String message() {
-        return greetingService().message(requestParam("who", "world"));
+        return greetingService().apply(acceptLanguages(), requestParam("who"));
     }
 
     // A controller method can be a virtual method with no parameter...

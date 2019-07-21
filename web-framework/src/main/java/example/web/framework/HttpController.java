@@ -28,7 +28,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 
 /**
@@ -112,6 +111,16 @@ public interface HttpController {
     }
 
     /**
+     * Returns the prioritized list of language ranges parsed from the `Accept-Language` header.
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.5">RFC 7231 - Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content - 5.3.5. Accept-Language</a>
+     */
+    @Caching(NOT_THREAD_SAFE)
+    default List<Locale> acceptLanguages() {
+        return HeadersFun.acceptLanguages(requestHeaders());
+    }
+
+    /**
      * @see HttpExchange#getRequestMethod()
      */
     @Caching(NOT_THREAD_SAFE)
@@ -120,10 +129,17 @@ public interface HttpController {
     }
 
     /**
+     * Returns the first value of the request parameter with the given name if present.
+     */
+    default Optional<String> requestParam(String name) {
+        return requestParameters().getOrDefault(name, emptyList()).stream().findFirst();
+    }
+
+    /**
      * Returns the first value of the request parameter with the given name or the given default value if not present.
      */
     default String requestParam(String name, String defaultValue) {
-        return requestParameters().getOrDefault(name, emptyList()).stream().findFirst().orElse(defaultValue);
+        return requestParam(name).orElse(defaultValue);
     }
 
     /**
@@ -132,7 +148,7 @@ public interface HttpController {
     @Caching(NOT_THREAD_SAFE)
     default Map<String, List<String>> requestParameters() {
         final var params = new LinkedHashMap<String, List<String>>();
-        stream(ofNullable(requestURI().getQuery()).orElse("").split("&")).forEach(p -> {
+        stream(Optional.ofNullable(requestURI().getQuery()).orElse("").split("&")).forEach(p -> {
             final var ps = p.split("=");
             final var lists = params.computeIfAbsent(ps[0], k -> new LinkedList<>());
             if (ps.length > 1) {
@@ -165,7 +181,7 @@ public interface HttpController {
      * Returns the exception thrown during request processing, if any.
      */
     default Optional<Throwable> throwable() {
-        return ofNullable((Throwable) context().getAttributes().get("throwable"));
+        return Optional.ofNullable((Throwable) context().getAttributes().get("throwable"));
     }
 
     @Caching(NOT_THREAD_SAFE)

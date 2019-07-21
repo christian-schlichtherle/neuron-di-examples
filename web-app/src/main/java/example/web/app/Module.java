@@ -4,9 +4,12 @@ import example.web.app.service.GreetingService;
 import global.namespace.neuron.di.java.Caching;
 import global.namespace.neuron.di.java.Neuron;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static global.namespace.neuron.di.java.Incubator.wire;
+import static java.util.Locale.*;
 
 // The module pattern bundles a group of factory methods for application components which may depend on each other.
 // In GoF parlance, it's a blend of the Factory pattern and the Mediator pattern because a module creates (and
@@ -24,15 +27,25 @@ import static global.namespace.neuron.di.java.Incubator.wire;
 @SuppressWarnings("unused")
 abstract class Module {
 
-    // This is a "dependency provider field" which gets read by `example.web.app.service.GreetingService.locale()`.
-    private static final Locale locale = Locale.ENGLISH;
+    private static final Locale AUSTRIA = forLanguageTag("de-AT");
+    private static final Locale SWITZERLAND = forLanguageTag("de-CH");
 
-    // Another dependency provider field, this time read by `example.web.app.service.GreetingService.greeting()`.
-    private static final String greeting = "Hello, %s!";
+    // This is a "dependency provider field" which gets read by
+    // `example.web.app.service.GreetingService.greetingMessages()`.
+    private static final Map<Locale, List<String>> greetingMessages = Map.of(
+            AUSTRIA, List.of("Servus, %s!", "miteinander"),
+            ENGLISH, List.of("Hello, %s!", "world"),
+            GERMAN, List.of("Hallo, %s!", "Welt"),
+            SWITZERLAND, List.of("Grüazie, %s!", "miteinander"),
+            US, List.of("Howdy, %s!", "y'all")
+    );
+
+    // Another dependency provider field, this time read by `example.web.app.service.GreetingService.defaultLocate()`.
+    private static final Locale defaultLocale = ENGLISH;
 
     // This is a "dependency provider method", that is, a non-abstract method without parameters.
-    // The synapse method `example.web.app.controller.GreetingController.greetingService()` delegates each call to this
-    // method, so it's a good idea to cache its result - think of it as a quasi-singleton.
+    // The method `example.web.app.controller.GreetingController.greetingService()` delegates each call to this method,
+    // so it's a good idea to cache its return value - think of it as a quasi-singleton.
     // The @Caching annotation requires a virtual method, so we cannot use a field or a method which is private or
     // static here.
     @Caching

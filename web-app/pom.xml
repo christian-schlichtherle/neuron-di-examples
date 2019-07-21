@@ -26,6 +26,10 @@
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>global.namespace.neuron-di</groupId>
+            <artifactId>neuron-di-scala_${scala.compat.version}</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
