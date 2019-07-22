@@ -5,7 +5,7 @@
 package example.web.app.controller;
 
 import example.web.app.dto.Greeting;
-import example.web.app.service.GreetingService;
+import example.web.app.service.api.GreetingService;
 import example.web.framework.HttpController;
 
 import java.util.concurrent.ThreadLocalRandom;

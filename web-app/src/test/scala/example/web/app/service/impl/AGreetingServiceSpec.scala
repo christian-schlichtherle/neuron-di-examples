@@ -1,10 +1,11 @@
-package example.web.app.service
+package example.web.app.service.impl
 
 import java.util.Locale
 import java.util.Locale._
 import java.util.Optional.ofNullable
 
-import example.web.app.service.GreetingService.UNDETERMINED
+import example.web.app.service.api.GreetingService
+import AGreetingService.UNDETERMINED
 import global.namespace.neuron.di.scala._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
@@ -12,9 +13,9 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 
 import scala.jdk.CollectionConverters._
 
-class GreetingServiceSpec extends WordSpec {
+class AGreetingServiceSpec extends WordSpec {
 
-  "A GreetingService" should {
+  "AGreetingService" should {
     "compute the expected message" in {
       forAll(tests) { (languageRanges, who, message) =>
         greetingService(languageRanges.asJava, ofNullable(who.orNull)) shouldBe message
@@ -40,7 +41,7 @@ class GreetingServiceSpec extends WordSpec {
     (List(US, ENGLISH), None, "Howdy, y'all!"),
   )
 
-  private lazy val greetingService = wire[GreetingService]
+  private lazy val greetingService: GreetingService = wire[AGreetingService]
 
   //noinspection ScalaUnusedSymbol
   private lazy val greetingMessages = Map(

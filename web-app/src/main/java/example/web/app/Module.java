@@ -1,6 +1,7 @@
 package example.web.app;
 
-import example.web.app.service.GreetingService;
+import example.web.app.service.api.GreetingService;
+import example.web.app.service.impl.AGreetingService;
 import global.namespace.neuron.di.java.Caching;
 import global.namespace.neuron.di.java.Neuron;
 
@@ -31,7 +32,11 @@ abstract class Module {
     private static final Locale SWITZERLAND = forLanguageTag("de-CH");
 
     // This is a "dependency provider field" which gets read by
-    // `example.web.app.service.GreetingService.greetingMessages()`.
+    // `example.web.app.service.impl.AGreetingService.defaultLocale()`.
+    private static final Locale defaultLocale = ENGLISH;
+
+    // Another dependency provider field, this time read by
+    // `example.web.app.service.impl.AGreetingService.greetingMessages()`.
     private static final Map<Locale, List<String>> greetingMessages = Map.of(
             AUSTRIA, List.of("Servus, %s!", "miteinander"),
             ENGLISH, List.of("Hello, %s!", "world"),
@@ -39,9 +44,6 @@ abstract class Module {
             SWITZERLAND, List.of("Grüazie, %s!", "miteinander"),
             US, List.of("Howdy, %s!", "y'all")
     );
-
-    // Another dependency provider field, this time read by `example.web.app.service.GreetingService.defaultLocate()`.
-    private static final Locale defaultLocale = ENGLISH;
 
     // This is a "dependency provider method", that is, a non-abstract method without parameters.
     // The method `example.web.app.controller.GreetingController.greetingService()` delegates each call to this method,
@@ -51,6 +53,6 @@ abstract class Module {
     @Caching
     GreetingService greetingService() {
         // In modules, components should be wired by delegating to the module itself:
-        return wire(GreetingService.class).using(this);
+        return wire(AGreetingService.class).using(this);
     }
 }
