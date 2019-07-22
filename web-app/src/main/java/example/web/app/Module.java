@@ -20,7 +20,7 @@ import static java.util.Locale.*;
 // object.
 //
 // In design pattern parlance, the module pattern is a blend of the factory pattern and the mediator pattern because a
-// module not only creates (and optionally caches) application components, but also delegates back to itself whenever
+// module not only creates (and optionally caches) application components, but may also delegate back to itself whenever
 // some of their dependencies need to get resolved.
 //
 // The @Neuron annotation is required to apply the @Caching annotation to the methods of this interface.
