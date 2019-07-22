@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2019 Schlichtherle IT Services.
+ * All rights reserved. Use is subject to license terms.
+ */
 package example.web.app.service.impl;
 
 import example.web.app.service.api.GreetingService;

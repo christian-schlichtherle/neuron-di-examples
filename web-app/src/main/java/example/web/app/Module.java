@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2019 Schlichtherle IT Services.
+ * All rights reserved. Use is subject to license terms.
+ */
 package example.web.app;
 
 import example.web.app.service.api.GreetingService;
@@ -12,9 +16,12 @@ import java.util.Map;
 import static global.namespace.neuron.di.java.Incubator.wire;
 import static java.util.Locale.*;
 
-// The module pattern bundles a group of factory methods for application components which may depend on each other.
-// In GoF parlance, it's a blend of the Factory pattern and the Mediator pattern because a module creates (and
-// optionally caches) components and delegates to itself for resolving their dependencies.
+// A module bundles a group of factory methods for application components which may depend on each other into a single
+// object.
+//
+// In design pattern parlance, the module pattern is a blend of the factory pattern and the mediator pattern because a
+// module not only creates (and optionally caches) application components, but also delegates back to itself whenever
+// some of their dependencies need to get resolved.
 //
 // The @Neuron annotation is required to apply the @Caching annotation to the methods of this interface.
 //
