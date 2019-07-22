@@ -52,7 +52,7 @@ abstract class Module {
             US, List.of("Howdy, %s!", "y'all")
     );
 
-    // This is a "dependency provider method", that is, a non-abstract method without parameters.
+    // This is a "dependency provider method", that is, a method without parameters.
     // The method `example.web.app.controller.GreetingController.greetingService()` delegates each call to this method,
     // so it's a good idea to cache its return value - think of it as a quasi-singleton.
     // The @Caching annotation requires a virtual method, so we cannot use a field or a method which is private or
