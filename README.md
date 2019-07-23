@@ -1,7 +1,7 @@
 ![MIT License](https://img.shields.io/github/license/christian-schlichtherle/neuron-di-examples.svg)
 [![Build Status](https://api.travis-ci.org/christian-schlichtherle/neuron-di-examples.svg)](https://travis-ci.org/christian-schlichtherle/neuron-di-examples)
 
-# Neuron DI Examples for Java 
+# Neuron DI Examples For Java 
 
 This repository contains sample code for [Neuron DI](https://github.com/christian-schlichtherle/neuron-di) for Java.
 There are no published releases of this repository, so if you want to play with the sample code, please check it out 
