@@ -48,6 +48,11 @@ class AGreetingServiceSpec extends WordSpec {
   private lazy val greetingService: GreetingService = wire[AGreetingService]
 
   //noinspection ScalaUnusedSymbol
+  private lazy val defaultLocale = ENGLISH
+  private lazy val AUSTRIA = forLanguageTag("de-AT")
+  private lazy val SWITZERLAND = forLanguageTag("de-CH")
+
+  //noinspection ScalaUnusedSymbol
   private lazy val greetingMessages = Map(
     AUSTRIA -> List("Servus, %s!", "miteinander"),
     ENGLISH -> List("Hello, %s!", "world"),
@@ -55,9 +60,4 @@ class AGreetingServiceSpec extends WordSpec {
     SWITZERLAND -> List("Grüazie, %s!", "miteinander"),
     US -> List("Howdy, %s!", "y'all"),
   ).view.mapValues(_.asJava).toMap.asJava
-
-  //noinspection ScalaUnusedSymbol
-  private lazy val defaultLocale = ENGLISH
-  private lazy val AUSTRIA = forLanguageTag("de-AT")
-  private lazy val SWITZERLAND = forLanguageTag("de-CH")
 }
