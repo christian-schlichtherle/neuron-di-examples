@@ -187,7 +187,7 @@ public interface HttpController {
     @Caching(NOT_THREAD_SAFE)
     default Encoder applicationJson() {
         responseHeaders().add("Content-Type", "application/json");
-        return Jackson.json(objectMapper()).encoder(BIOS.stream(responseBody()));
+        return Jackson.json(this::objectMapper).encoder(BIOS.stream(responseBody()));
     }
 
     @Caching(NOT_THREAD_SAFE)
