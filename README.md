@@ -17,7 +17,7 @@ If you don't have a JDK for Java 11, you can run the build in Docker instead:
 
 # Example Web Framework & Web App
 
-This repository provides a tiny web framework and web app in the modules `web-framework` and `web-app`.
+This repository provides a tiny web framework and application in the modules `web-framework` and `web-app`.
 
 The web framework simply adapts the package `com.sun.net.httpserver`, which is bundled with the JDK since Java 6.
 The focus of the web framework is on dependency injection, a nice 
