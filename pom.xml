@@ -11,7 +11,7 @@
     <parent>
         <groupId>global.namespace.parent-pom</groupId>
         <artifactId>parent-pom</artifactId>
-        <version>9</version>
+        <version>10</version>
     </parent>
 
     <groupId>global.namespace.neuron-di-examples</groupId>
@@ -20,9 +20,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <fun-io.version>2.2.0</fun-io.version>
+        <fun-io.version>2.3.0</fun-io.version>
         <maven.compiler.source>11</maven.compiler.source>
-        <neuron-di.version>6.4.0</neuron-di.version>
+        <neuron-di.version>6.4.4</neuron-di.version>
     </properties>
 
     <modules>
