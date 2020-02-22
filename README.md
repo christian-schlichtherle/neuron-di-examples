@@ -11,7 +11,7 @@ and run the following command to build it:
 
 Neuron DI targets Java 8 or later.
 However, the sample code in this repository targets a JDK for Java 11 or later.
-If you don't have a JDK for Java 11, you can run the build in Docker instead:
+If you don't have a JDK for Java 11 or later installed, then you can run the build in Docker instead:
 
     $ ./docker-mvnw 11-jdk-slim clean verify
 
@@ -28,12 +28,12 @@ so it's a [leaky abstraction](https://en.wikipedia.org/wiki/Leaky_abstraction) a
 production!
 
 The web app produces a simple Hello-world-in-JSON.
-Using a JDK for Java 11, you can run it like this:
+Using a JDK for Java 11 or later, you can run it like this:
 
     $ java -jar web-app/target/web-app-*-all.jar
     08:36:40.707 [main] INFO example.web.framework.HttpServer - Serving HTTP/1.1 on port 8080.
 
-If you don't have a JDK for Java 11, you can use the following Docker spell instead:
+If you don't have a JDK for Java 11 or later installed, then you can use the following Docker spell instead:
 
     $ docker run -it --rm -v $PWD:/workdir -w /workdir -p 8080:8080 openjdk:11-jdk-slim \
         java -jar web-app/target/web-app-*-all.jar
